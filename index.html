@@ -108,6 +108,33 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
+        /* Blog section */
+        .blog-section {
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .blog-section h3 {
+            color: #3498db;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+        }
+
+        .blog-list {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .blog-list li {
+            background-color: #2e2e2e;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
         /* Footer styling */
         footer {
             background-color: #34495e;
@@ -173,6 +200,14 @@
             </a>
         </ul>
     </div>
+</section>
+
+<!-- Blog Section -->
+<section class="blog-section">
+    <h3>Latest Blog Post</h3>
+    <ul class="blog-list" id="blog-list">
+        <!-- Latest blog entry will be inserted here -->
+    </ul>
 </section>
 
 <!-- Footer -->
@@ -290,6 +325,31 @@
             "retina_detect": true
         }
     });
+
+    // Fetch the latest blog post
+    const fetchLatestBlogPost = async () => {
+        try {
+            const response = await fetch('blog/blog_posts.json'); // Adjust the path if necessary
+            const posts = await response.json();
+            const latestPost = posts[posts.length - 1]; // Get the latest post (assuming the latest is the last one in the array)
+
+            const blogList = document.getElementById('blog-list');
+            const blogItem = document.createElement('li');
+            blogItem.innerHTML = `
+                <h3>${latestPost.title}</h3>
+                <p><em>${latestPost.date}</em></p>
+                <p>${latestPost.content.substring(0, 100)}... <strong>Click to read more</strong></p>
+            `;
+            blogItem.onclick = () => {
+                window.location.href = 'blog/blog.html'; // Redirect to the full blog page
+            };
+            blogList.appendChild(blogItem);
+        } catch (error) {
+            console.error('Error fetching latest blog post:', error);
+        }
+    };
+
+    fetchLatestBlogPost();
 </script>
 
 </body>

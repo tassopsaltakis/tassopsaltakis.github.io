@@ -36,6 +36,22 @@
             font-size: 2.5em;
         }
 
+        /* Back to Main Site button */
+        .back-button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #2980b9; /* Darker shade on hover */
+        }
+
         main {
             position: relative;
             z-index: 1; /* Above background */
@@ -125,6 +141,7 @@
     <canvas id="canvas"></canvas>
     <header>
         <h1>Tasso's Blog</h1>
+        <a href="../index.html" class="back-button">Back to Main Site</a> <!-- back to main site-->
     </header>
     <main id="blog-feed">
         <!-- Blog entries will be inserted here -->
