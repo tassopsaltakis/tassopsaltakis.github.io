@@ -4,31 +4,295 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web-Phys Physics Simulator</title>
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1f1f1f;
+            color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            margin: 20px 0;
+            color: #f39c12;
+        }
+
+        #gameCanvas {
+            background-color: #2c3e50;
+            border: 3px solid #e74c3c;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .toolbar {
+            margin: 20px 0;
+        }
+
+        .toolbar button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+        .toolbar button.powder {
+            background-color: #c2b280;
+        }
+
+        .toolbar button.water {
+            background-color: #3498db;
+        }
+
+        .toolbar button.fire {
+            background-color: #e74c3c;
+        }
+
+        .toolbar button.clear {
+            background-color: #7f8c8d;
+        }
+
+        .toolbar button:hover {
+            opacity: 0.8;  /* Hover effect for buttons */
+        }
+    </style>
 </head>
 <body>
     <h1>Web-Phys: Physics Simulator</h1>
-
-    <!-- Canvas where the simulation will happen -->
     <canvas id="gameCanvas" width="1200" height="800"></canvas>
 
-    <!-- Toolbar for selecting tools (elements) -->
     <div class="toolbar">
         <button class="powder" onclick="setElementType('powder')">Powder</button>
         <button class="water" onclick="setElementType('water')">Water</button>
         <button class="fire" onclick="setElementType('fire')">Fire</button>
         <button class="clear" onclick="clearCanvas()">Clear</button>
-
         <label for="brushSize">Brush Size:</label>
         <input type="range" id="brushSize" min="1" max="20" value="5">
-
         <label for="particleDensity">Particle Density:</label>
         <input type="range" id="particleDensity" min="1" max="20" value="5">
     </div>
 
-    <!-- Ensure correct script loading order -->
-    <script src="js/elements.js"></script>   <!-- Load elements.js first -->
-    <script src="js/physics.js"></script>    <!-- Load physics.js second -->
-    <script src="js/main.js"></script>       <!-- Load main.js last -->
+    <script>
+        const elements = {
+            powder: {
+                color: '#c2b280',
+                flammable: true,
+                gravity: 2,
+                update: function(particle) {
+                    applyGravity(particle);
+                    handleCompression(particle);  // Allow powder to compress and settle
+                }
+            },
+            water: {
+                color: '#3498db',
+                gravity: 1.5,
+                spreadSpeed: 0.8,
+                update: function(particle) {
+                    applyGravity(particle);
+                    spreadLiquid(particle);  // Water flows sideways
+                }
+            },
+            fire: {
+                color: '#e74c3c',
+                gravity: -1,  // Fire rises
+                lifetime: 200,  // Fire dissipates over time
+                spreadChance: 0.01,  // Slow fire spreading to flammable particles
+                update: function(particle) {
+                    applyGravity(particle);
+                    spreadFire(particle);
+                    dissipateFire(particle);  // Fire burns out over time
+                }
+            }
+        };
+
+    class Particle {
+            constructor(x, y, type, size) {
+                this.x = x;
+                this.y = y;
+                this.type = type;
+                this.color = elements[type].color;
+                this.gravity = elements[type].gravity;
+                this.size = size;
+                this.velocityY = 0;
+                this.settled = false;
+                this.remove = false;
+            }
+
+            update() {
+                // Always apply gravity
+                this.velocityY += this.gravity;
+
+                // Update position based on velocity
+                this.y += this.velocityY;
+
+                // Prevent going below the canvas
+                if (this.y + this.size >= canvas.height) {
+                    this.y = canvas.height - this.size;  // Clamp to bottom
+                    this.velocityY = 0;  // Stop movement
+                    this.settled = true;  // Mark as settled
+                }
+
+                // Check for collisions with other particles
+                this.resolveCollision();
+                this.checkBounds();
+            }
+
+            resolveCollision() {
+                const below = this.checkBelow();
+                if (below) {
+                    const overlap = this.y + this.size - below.y;
+
+                    if (overlap > 0) {
+                        // Correct the overlap by moving up and stop vertical movement
+                        this.y -= overlap;
+                        this.velocityY = 0;  // Stop the particle from moving down
+                        this.settled = true;  // Mark as settled
+                    }
+                } else {
+                    this.settled = false;  // Not settled if there's no particle below
+                }
+            }
+
+            checkBelow() {
+                return particles.find(p =>
+                    this.isColliding(p) && // Check for collision
+                    p.y === this.y + this.size // Directly below
+                );
+            }
+
+            isColliding(otherParticle) {
+                return (
+                    this.x < otherParticle.x + otherParticle.size &&
+                    this.x + this.size > otherParticle.x &&
+                    this.y < otherParticle.y + otherParticle.size &&
+                    this.y + this.size > otherParticle.y
+                );
+            }
+
+            checkBounds() {
+                // Ensure the particle stays within the canvas bounds
+                if (this.x < 0) this.x = 0;
+                if (this.x > canvas.width - this.size) this.x = canvas.width - this.size;
+                if (this.y < 0) this.y = 0;
+                if (this.y > canvas.height - this.size) this.y = canvas.height - this.size;
+            }
+
+            draw(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.size, this.size);  // Draw the particle
+            }
+        }
+
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        let currentElementType = 'powder';
+        let drawing = false;
+        let brushSize = document.getElementById('brushSize').value;
+        let particleDensity = document.getElementById('particleDensity').value;
+
+        // Event listeners for brush size and particle density
+        document.getElementById('brushSize').addEventListener('input', (e) => {
+            brushSize = e.target.value;
+        });
+
+        document.getElementById('particleDensity').addEventListener('input', (e) => {
+            particleDensity = e.target.value;
+        });
+
+        // Add particles when mouse is clicked and held down
+        canvas.addEventListener('mousedown', (e) => {
+            drawing = true;
+            createParticles(e);
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            drawing = false;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (drawing) {
+                createParticles(e);
+            }
+        });
+
+        // Create multiple particles based on density and brush size
+        function createParticles(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            for (let i = 0; i < particleDensity; i++) {
+                const randomOffsetX = (Math.random() - 0.5) * brushSize;
+                const randomOffsetY = (Math.random() - 0.5) * brushSize;
+                particles.push(new Particle(x + randomOffsetX, y + randomOffsetY, currentElementType, 5));
+            }
+        }
+
+        function setElementType(type) {
+            currentElementType = type;
+        }
+
+        function clearCanvas() {
+            particles = [];
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Main game loop to update and draw particles
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Remove particles marked for removal (e.g., fire particles that burn out)
+            particles = particles.filter(particle => !particle.remove);
+
+            // Update and draw each particle
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw(ctx);
+            });
+
+            handleCollisions(); // Ensure collisions are handled each frame
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();  // Start the loop
+
+        // Handle particle collisions
+        function handleCollisions() {
+            particles.forEach((p1, index) => {
+                for (let i = index + 1; i < particles.length; i++) {
+                    let p2 = particles[i];
+                    if (p1.isColliding(p2)) {
+                        resolveCollision(p1, p2);
+                    }
+                }
+            });
+        }
+
+        // Resolve collision logic
+        function resolveCollision(p1, p2) {
+            if (p1.y < p2.y) {
+                const overlap = p1.y + p1.size - p2.y;
+                if (overlap > 0 && overlap < p1.size) {
+                    p1.y -= overlap * 0.5;  // Correct the overlap
+                    p1.velocityY = 0;  // Stop vertical movement
+                }
+            } else if (p1.y > p2.y) {
+                const overlap = p2.y + p2.size - p1.y;
+                if (overlap > 0 && overlap < p2.size) {
+                    p2.y -= overlap * 0.5;
+                    p2.velocityY = 0;
+                }
+            }
+        }
+    </script>
 </body>
 </html>
