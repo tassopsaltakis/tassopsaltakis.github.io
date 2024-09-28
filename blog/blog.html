@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasso's Blog</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212; /* Dark background */
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow: hidden;
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Background */
+        }
+
+        header {
+            background: linear-gradient(135deg, #00aaff, #0077ff);
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+        }
+
+        main {
+            position: relative;
+            z-index: 1; /* Above background */
+            padding: 20px;
+            color: white;
+            overflow-y: auto;
+            height: 100vh;
+            overflow-x: hidden;
+        }
+
+        article {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        article:hover {
+            transform: scale(1.02);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            z-index: 1;
+        }
+
+        /* Light mode styles */
+        .light-mode {
+            background-color: #ffffff; /* Light background */
+            color: #000000; /* Dark text */
+        }
+
+        .light-mode header {
+            background: linear-gradient(135deg, #ffcc00, #ff9900);
+        }
+
+        .light-mode article {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            color: black;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <header>
+        <h1>Tasso's Blog</h1>
+    </header>
+    <main id="blog-feed">
+        <!-- Blog entries will be inserted here -->
+    </main>
+    <footer>
+        <p>&copy; 2024 Tasso</p>
+    </footer>
+
+    <!-- Modal for viewing posts -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title"></h2>
+            <p id="modal-date"></p>
+            <p id="modal-content"></p>
+        </div>
+    </div>
+
+    <script>
+        const fetchPosts = async () => {
+            try {
+                const response = await fetch('blog_posts.json'); // Update the path as needed
+                const posts = await response.json();
+
+                const blogFeed = document.getElementById('blog-feed');
+                blogFeed.innerHTML = ''; // Clear existing content
+
+                posts.forEach(post => {
+                    const article = document.createElement('article');
+                    article.innerHTML = `
+                        <h2>${post.title}</h2>
+                        <p><em>${post.date}</em></p>
+                        <p>${post.content.substring(0, 100)}... <strong>Click to see more</strong></p> <!-- Preview content -->
+                    `;
+                    article.onclick = () => openModal(post);
+                    blogFeed.appendChild(article);
+                });
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+            }
+        };
+
+        const openModal = (post) => {
+            document.getElementById('modal-title').innerText = post.title;
+            document.getElementById('modal-date').innerText = post.date;
+            document.getElementById('modal-content').innerText = post.content;
+            document.getElementById('myModal').style.display = "block";
+        };
+
+        const closeModal = () => {
+            document.getElementById('myModal').style.display = "none";
+        };
+
+        document.querySelector('.close').onclick = closeModal;
+        window.onclick = (event) => {
+            if (event.target === document.getElementById('myModal')) {
+                closeModal();
+            }
+        };
+
+        // Dark/Light Mode Toggle
+        const toggleButton = document.createElement('button');
+        toggleButton.innerText = 'Toggle Dark/Light Mode';
+        toggleButton.style.position = 'fixed';
+        toggleButton.style.top = '20px';
+        toggleButton.style.right = '20px';
+        toggleButton.style.padding = '10px';
+        toggleButton.style.background = '#61dafb';
+        toggleButton.style.color = '#000';
+        toggleButton.style.border = 'none';
+        toggleButton.style.borderRadius = '5px';
+        toggleButton.style.cursor = 'pointer';
+
+        document.body.appendChild(toggleButton);
+        toggleButton.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+        });
+
+        // Initialize the physics simulation
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 2 + 1; // Smaller size for particles
+                this.speedX = Math.random() * 4 - 2; // Adjust speed for better bouncing
+                this.speedY = Math.random() * 4 - 2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Bounce off walls
+                if (this.x + this.size > canvas.width || this.x - this.size < 0) {
+                    this.speedX = -this.speedX; // Reverse direction on X-axis
+                }
+                if (this.y + this.size > canvas.height || this.y - this.size < 0) {
+                    this.speedY = -this.speedY; // Reverse direction on Y-axis
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < 200; i++) {
+                particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+        fetchPosts();
+    </script>
+</body>
+</html>
