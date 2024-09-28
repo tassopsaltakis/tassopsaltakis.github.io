@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Pet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1f1f1f;
+            color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        .pet {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .stats {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Meet Your Virtual Pet!</h1>
+
+    <div class="pet" id="pet"> ( ^ _ ^ ) ~ ~ </div>
+
+    <div class="stats">
+        <p>Hunger: <span id="hunger">50</span> / 100</p>
+        <p>Happiness: <span id="happiness">50</span> / 100</p>
+        <p>Energy: <span id="energy">50</span> / 100</p>
+    </div>
+
+    <div class="actions">
+        <button onclick="feedPet()">Feed</button>
+        <button onclick="playWithPet()">Play</button>
+        <button onclick="restPet()">Rest</button>
+    </div>
+
+    <script>
+        // Initialize pet data from localStorage or set default values
+        let pet = {
+            hunger: parseInt(localStorage.getItem('hunger')) || 50,
+            happiness: parseInt(localStorage.getItem('happiness')) || 50,
+            energy: parseInt(localStorage.getItem('energy')) || 50
+        };
+
+        // Function to update displayed stats
+        function updateStats() {
+            document.getElementById('hunger').textContent = pet.hunger;
+            document.getElementById('happiness').textContent = pet.happiness;
+            document.getElementById('energy').textContent = pet.energy;
+        }
+
+        // Feed the pet (increase hunger, but not above 100)
+        function feedPet() {
+            pet.hunger = Math.min(pet.hunger + 10, 100);
+            savePetData();
+            updateStats();
+        }
+
+        // Play with the pet (increase happiness, reduce energy)
+        function playWithPet() {
+            if (pet.energy > 0) {
+                pet.happiness = Math.min(pet.happiness + 10, 100);
+                pet.energy = Math.max(pet.energy - 10, 0);
+                savePetData();
+                updateStats();
+            } else {
+                alert("Your pet is too tired to play! Let it rest.");
+            }
+        }
+
+        // Let the pet rest (increase energy)
+        function restPet() {
+            pet.energy = Math.min(pet.energy + 20, 100);
+            savePetData();
+            updateStats();
+        }
+
+        // Save pet data to localStorage
+        function savePetData() {
+            localStorage.setItem('hunger', pet.hunger);
+            localStorage.setItem('happiness', pet.happiness);
+            localStorage.setItem('energy', pet.energy);
+        }
+
+        // Initial display of pet stats
+        updateStats();
+    </script>
+</body>
+</html>
