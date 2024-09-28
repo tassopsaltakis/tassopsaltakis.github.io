@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual Pet</title>
+    <title>Virtual Pet with Changing Expressions</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,6 +15,13 @@
         .pet {
             font-size: 2em;
             margin-bottom: 20px;
+            position: relative;
+            animation: move 5s infinite alternate ease-in-out;
+        }
+        @keyframes move {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(100px); }
+            100% { transform: translateX(0); }
         }
         .stats {
             margin-bottom: 20px;
@@ -30,10 +37,31 @@
         button:hover {
             background-color: #2980b9;
         }
+        .game-explanation {
+            margin-bottom: 40px;
+            font-size: 1.2em;
+            color: #bdc3c7;
+        }
     </style>
 </head>
 <body>
     <h1>Meet Your Virtual Pet!</h1>
+
+    <!-- Game Explanation -->
+    <div class="game-explanation">
+        <p>Welcome to the Virtual Pet Game! Your pet has three key stats: <strong>Hunger</strong>, <strong>Happiness</strong>, and <strong>Energy</strong>.
+        These stats will decrease over time, and it's your job to manage them to keep your pet healthy and happy.</p>
+
+        <p>If your pet's <strong>Hunger</strong> drops too low, it will become hungry and sad. If its <strong>Happiness</strong> is too low, it will become sad and tired.
+        And if its <strong>Energy</strong> drops too low, your pet will become too tired to play and will need to rest.</p>
+
+        <p>The goal is to keep your pet's stats as high as possible by interacting with it regularly. You can <strong>feed</strong> your pet to increase hunger,
+        <strong>play</strong> with your pet to increase happiness, and let your pet <strong>rest</strong> to restore energy. But remember: stats decrease over time,
+        so you'll need to keep an eye on them!</p>
+
+        <p>If you let the stats drop too much, your pet's expressions will show how it feels:
+        a hungry face, a sad face, or a tired face. Manage your pet carefully to avoid this!</p>
+    </div>
 
     <div class="pet" id="pet"> ( ^ _ ^ ) ~ ~ </div>
 
@@ -57,11 +85,38 @@
             energy: parseInt(localStorage.getItem('energy')) || 50
         };
 
-        // Function to update displayed stats
+        // Function to update displayed stats and pet face
         function updateStats() {
             document.getElementById('hunger').textContent = pet.hunger;
             document.getElementById('happiness').textContent = pet.happiness;
             document.getElementById('energy').textContent = pet.energy;
+            updatePetFace();
+        }
+
+        // Update the pet's facial expression based on stats
+        function updatePetFace() {
+            const petElement = document.getElementById('pet');
+
+            // Happy face when all stats are high
+            if (pet.hunger >= 80 && pet.happiness >= 80 && pet.energy >= 80) {
+                petElement.textContent = " ( ^ _ ^ ) ~ ~ ";
+            }
+            // Tired face if energy is low
+            else if (pet.energy < 30) {
+                petElement.textContent = " ( - _ - ) zzZ ";
+            }
+            // Hungry face if hunger is low
+            else if (pet.hunger < 30) {
+                petElement.textContent = " ( > _ < ) ~ I'm hungry!";
+            }
+            // Sad face if happiness is low
+            else if (pet.happiness < 30) {
+                petElement.textContent = " ( T _ T ) ~ I'm sad!";
+            }
+            // Neutral face if stats are in the middle range
+            else {
+                petElement.textContent = " ( - _ - ) ~ ~ ";
+            }
         }
 
         // Feed the pet (increase hunger, but not above 100)
@@ -96,6 +151,18 @@
             localStorage.setItem('happiness', pet.happiness);
             localStorage.setItem('energy', pet.energy);
         }
+
+        // Function to decrease stats over time (every 5 seconds)
+        function decreaseStatsOverTime() {
+            if (pet.hunger > 0) pet.hunger = Math.max(pet.hunger - 1, 0);
+            if (pet.happiness > 0) pet.happiness = Math.max(pet.happiness - 1, 0);
+            if (pet.energy > 0) pet.energy = Math.max(pet.energy - 1, 0);
+            savePetData();
+            updateStats();
+        }
+
+        // Start the timer to decrease stats over time
+        setInterval(decreaseStatsOverTime, 5000);  // Decreases every 5 seconds
 
         // Initial display of pet stats
         updateStats();
