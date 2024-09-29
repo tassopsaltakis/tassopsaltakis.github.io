@@ -232,9 +232,9 @@
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.size = Math.random() * 2 + 1; // Smaller size for particles
-                this.speedX = Math.random() * 4 - 2; // Adjust speed for better bouncing
-                this.speedY = Math.random() * 4 - 2;
+                this.size = Math.random() * 1.5 + 0.5; // Smaller size for particles
+                this.speedX = Math.random() * 2 - 1; // Slower speed for smoother motion
+                this.speedY = Math.random() * 2 - 1;
             }
 
             update() {
@@ -243,15 +243,15 @@
 
                 // Bounce off walls
                 if (this.x + this.size > canvas.width || this.x - this.size < 0) {
-                    this.speedX = -this.speedX; // Reverse direction on X-axis
+                    this.speedX = -this.speedX;
                 }
                 if (this.y + this.size > canvas.height || this.y - this.size < 0) {
-                    this.speedY = -this.speedY; // Reverse direction on Y-axis
+                    this.speedY = -this.speedY;
                 }
             }
 
             draw() {
-                ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'; // Lower opacity for less distraction
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.closePath();
