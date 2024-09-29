@@ -12,7 +12,7 @@
             margin: 0;
             padding: 20px;
             transition: background-color 0.3s ease, color 0.3s ease;
-            overflow: hidden;
+            overflow: auto; /* Allow the body to scroll */
         }
 
         #canvas {
@@ -57,9 +57,9 @@
             z-index: 1; /* Above background */
             padding: 20px;
             color: white;
-            overflow-y: auto;
-            height: 100vh;
+            overflow-y: auto; /* Enable scrolling in the main content */
             overflow-x: hidden;
+            min-height: 100%; /* Ensure it takes up full available height */
         }
 
         article {
