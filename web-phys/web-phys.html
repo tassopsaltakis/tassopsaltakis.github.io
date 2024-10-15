@@ -124,8 +124,10 @@
             }
 
             update() {
-                // Always apply gravity
-                this.velocityY += this.gravity;
+                // Apply gravity
+                if (!this.settled) {
+                    this.velocityY += this.gravity;
+                }
 
                 // Update position based on velocity
                 this.y += this.velocityY;
@@ -137,31 +139,52 @@
                     this.settled = true;  // Mark as settled
                 }
 
-                // Check for collisions with other particles
+                // Resolve collisions and check if the particle can spread sideways
                 this.resolveCollision();
-                this.checkBounds();
             }
 
             resolveCollision() {
                 const below = this.checkBelow();
                 if (below) {
-                    const overlap = this.y + this.size - below.y;
+                    // There's a particle below, so try to move left or right
+                    const spaceToLeft = this.checkSpace(-1); // Check space to the left
+                    const spaceToRight = this.checkSpace(1); // Check space to the right
 
-                    if (overlap > 0) {
-                        // Correct the overlap by moving up and stop vertical movement
-                        this.y -= overlap;
-                        this.velocityY = 0;  // Stop the particle from moving down
+                    if (spaceToLeft && !this.settled) {
+                        this.x -= this.size;  // Move left if there's space
+                        this.velocityY *= 0.9;  // Slow down slightly when moving sideways
+                    } else if (spaceToRight && !this.settled) {
+                        this.x += this.size;  // Move right if there's space
+                        this.velocityY *= 0.9;  // Slow down slightly when moving sideways
+                    } else {
+                        // If no space to move sideways, settle the particle
+                        this.y -= this.velocityY;  // Adjust the overlap
+                        this.velocityY = 0;
                         this.settled = true;  // Mark as settled
                     }
                 } else {
-                    this.settled = false;  // Not settled if there's no particle below
+                    // No particle below, continue falling
+                    this.settled = false;  // Mark as not settled
                 }
+
+                this.checkBounds();  // Make sure the particle stays within the canvas bounds
             }
 
+            // Check if there's a particle directly below
             checkBelow() {
                 return particles.find(p =>
-                    this.isColliding(p) && // Check for collision
-                    p.y === this.y + this.size // Directly below
+                    p !== this &&
+                    this.isColliding(p) &&
+                    p.y === this.y + this.size
+                );
+            }
+
+            // Check for space to the left or right for particles to spread out
+            checkSpace(direction) {
+                const targetX = this.x + direction * this.size;
+                return !particles.some(p =>
+                    p.x === targetX &&
+                    Math.abs(p.y - this.y) < this.size  // Check nearby particles
                 );
             }
 
@@ -187,6 +210,7 @@
                 ctx.fillRect(this.x, this.y, this.size, this.size);  // Draw the particle
             }
         }
+
 
 
         const canvas = document.getElementById('gameCanvas');
