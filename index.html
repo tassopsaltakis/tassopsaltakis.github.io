@@ -3,354 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Tasso Psaltakis - Developer Portfolio</title>
+    <title>Home - Tasso's Projects</title>
     <style>
-        /* Reset some default styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Arial', sans-serif;
+            margin: 0;
+            font-family: Arial, sans-serif;
             background-color: #1f1f1f;
             color: #f4f4f4;
-            line-height: 1.6;
-            overflow-x: hidden;
         }
-
-        /* Particle background */
-        #particles-js {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            background-color: #1f1f1f;
-        }
-
-        /* Hero section */
         header {
-            position: relative;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #ecf0f1;
             text-align: center;
-            padding: 20px;
+            padding: 50px 20px;
         }
-
-        h1 {
-            font-size: 4em;
-            color: #f4f4f4;
-            text-transform: uppercase;
-            animation: fadeIn 2s ease-in-out;
-        }
-
-        h2 {
-            font-size: 1.8em;
-            color: #ffffff;
-            margin-top: 10px;
-            font-weight: lighter;
-            animation: fadeIn 3s ease-in-out;
-        }
-
-        /* Project section */
-        section {
-            padding: 40px 20px;
-            max-width: 1200px;
-            margin: auto;
-            text-align: center;
-        }
-
-        h3 {
+        header h1 {
+            font-size: 2.5em;
             color: #3498db;
-            font-size: 2.2em;
-            margin-bottom: 20px;
         }
-
-        p {
+        header p {
             font-size: 1.2em;
-            color: #bdc3c7;
-            margin-bottom: 30px;
         }
-
-        /* Project list styling */
-        .project-list ul {
-            list-style-type: none;
-            padding: 0;
+        nav {
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            justify-content: center;
+            background-color: #333;
+            padding: 10px 0;
         }
-
-        .project-list a {
+        nav a {
+            color: white;
             text-decoration: none;
-            color: inherit;
-            transition: all 0.3s ease;
+            padding: 10px 20px;
+            transition: background-color 0.3s;
         }
-
-        .project-list li {
-            background-color: #2e2e2e;
+        nav a:hover {
+            background-color: #555;
+        }
+        section {
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .project-list a:hover li {
-            transform: scale(1.05);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Blog section */
-        .blog-section {
-            margin: 40px 0;
-            text-align: center;
-        }
-
-        .blog-section h3 {
-            color: #3498db;
-            font-size: 2.2em;
-            margin-bottom: 20px;
-        }
-
-        .blog-list {
-            list-style-type: none;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .blog-list li {
-            background-color: #2e2e2e;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Footer styling */
-        footer {
-            background-color: #34495e;
-            color: #ecf0f1;
-            padding: 20px 0;
-            text-align: center;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            max-width: 800px;
+            margin: 0 auto;
         }
     </style>
 </head>
 <body>
-
-<!-- Particle Background -->
-<div id="particles-js"></div>
-
-<!-- Hero section -->
-<header>
-    <h1>Tasso Psaltakis</h1>
-    <h2>Creative Developer | Innovator</h2>
-</header>
-
-<!-- Projects Section -->
-<section>
-    <div class="project-description">
-        <h3>My Projects</h3>
-        <p>Explore some of the key projects I’ve been working on, blending AI, game development, and creative tech solutions.</p>
-    </div>
-
-    <div class="project-list">
-        <ul>
-            <a href="ai-chat.html">
-                <li>
-                    <h3>AI Chat Application</h3>
-                    <p>An interactive AI assistant application built with Llama and Tkinter, featuring system health monitoring and a clean, dark-mode UI.</p>
-                </li>
-            </a>
-            <a href="terra-tactica.html">
-                <li>
-                    <h3>TERRA-TACTICA</h3>
-                    <p>A civilization-building game that emphasizes strategic resource management, tactical battles, and procedural world generation.</p>
-                </li>
-            </a>
-            <a href="un-gen-phi.html">
-                <li>
-                    <h3>UnGen-Phi</h3>
-                    <p>An AI-powered username generator leveraging the Phi-3.5-mini-instruct model, dynamically generating unique usernames with options for Fantasy, Futuristic, and Funny themes.</p>
-                </li>
-            </a>
-            <a href="virtualpet.html" target="_blank">
-                <li>
-                    <h3>Virtual Pet Game</h3>
-                    <p>A fun virtual pet game where users can interact with and take care of a digital pet. The pet’s stats will decrease over time, and the player must manage its hunger, happiness, and energy to keep it healthy.</p>
-                </li>
-            </a>
-        </ul>
-    </div>
-</section>
-
-<!-- Blog Section -->
-<section class="blog-section">
-    <h3>Latest Blog Post</h3>
-    <ul class="blog-list" id="blog-list">
-        <!-- Latest blog entry will be inserted here -->
-    </ul>
-</section>
-
-<!-- Footer -->
-<footer>
-    <p>© 2024 Tasso Psaltakis | Let’s build the future, one line of code at a time.</p>
-</footer>
-
-<!-- Include particles.js library -->
-<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-
-<!-- Initialize particles.js -->
-<script>
-    particlesJS('particles-js', {
-        "particles": {
-            "number": {
-                "value": 80,
-                "density": {
-                    "enable": true,
-                    "value_area": 800
-                }
-            },
-            "color": {
-                "value": "#3498db"
-            },
-            "shape": {
-                "type": "circle",
-                "stroke": {
-                    "width": 0,
-                    "color": "#000000"
-                },
-                "polygon": {
-                    "nb_sides": 5
-                },
-                "opacity": {
-                    "value": 0.5,
-                    "random": false,
-                    "anim": {
-                        "enable": false,
-                        "speed": 1,
-                        "opacity_min": 0.1,
-                        "sync": false
-                    }
-                },
-                "size": {
-                    "value": 5,
-                    "random": true,
-                    "anim": {
-                        "enable": false,
-                        "speed": 40,
-                        "size_min": 0.1,
-                        "sync": false
-                    }
-                },
-                "line_linked": {
-                    "enable": true,
-                    "distance": 150,
-                    "color": "#3498db",
-                    "opacity": 0.4,
-                    "width": 1
-                },
-                "move": {
-                    "enable": true,
-                    "speed": 6,
-                    "direction": "none",
-                    "random": false,
-                    "straight": false,
-                    "out_mode": "out",
-                    "bounce": false,
-                    "attract": {
-                        "enable": false,
-                        "rotateX": 600,
-                        "rotateY": 1200
-                    }
-                }
-            },
-            "interactivity": {
-                "detect_on": "canvas",
-                "events": {
-                    "onhover": {
-                        "enable": true,
-                        "mode": "repulse"
-                    },
-                    "onclick": {
-                        "enable": true,
-                        "mode": "push"
-                    },
-                    "resize": true
-                },
-                "modes": {
-                    "grab": {
-                        "distance": 400,
-                        "line_linked": {
-                            "opacity": 1
-                        }
-                    },
-                    "bubble": {
-                        "distance": 400,
-                        "size": 40,
-                        "duration": 2,
-                        "opacity": 8,
-                        "speed": 3
-                    },
-                    "repulse": {
-                        "distance": 200,
-                        "duration": 0.4
-                    },
-                    "push": {
-                        "particles_nb": 4
-                    },
-                    "remove": {
-                        "particles_nb": 2
-                    }
-                }
-            },
-            "retina_detect": true
-        }
-    });
-
-    // Fetch the latest blog post
-    const fetchLatestBlogPost = async () => {
-        try {
-            const response = await fetch('blog/blog_posts.json'); // Adjust the path if necessary
-            const posts = await response.json();
-            const latestPost = posts[posts.length - 1]; // Get the latest post (assuming the latest is the last one in the array)
-
-            const blogList = document.getElementById('blog-list');
-            const blogItem = document.createElement('li');
-            blogItem.innerHTML = `
-                <h3>${latestPost.title}</h3>
-                <p><em>${latestPost.date}</em></p>
-                <p>${latestPost.content.substring(0, 100)}... <strong>Click to read more</strong></p>
-            `;
-            blogItem.onclick = () => {
-                window.location.href = 'blog/blog.html'; // Redirect to the full blog page
-            };
-            blogList.appendChild(blogItem);
-        } catch (error) {
-            console.error('Error fetching latest blog post:', error);
-        }
-    };
-
-    fetchLatestBlogPost();
-</script>
-
+    <header>
+        <h1>Welcome to Tasso's Projects</h1>
+        <p>Explore the projects and resources I have been working on.</p>
+    </header>
+    <nav>
+        <a href="conways.html">Conway's Game</a>
+        <a href="useful-links.html">Useful Links</a>
+    </nav>
+    <section>
+        <h2>About</h2>
+        <p>This is a simple portfolio to showcase my ongoing work and provide access to useful resources.</p>
+    </section>
 </body>
 </html>
